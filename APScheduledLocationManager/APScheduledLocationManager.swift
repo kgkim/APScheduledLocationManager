@@ -31,7 +31,7 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
     private var isManagerRunning = false
     private var checkLocationTimer: Timer?
     private var waitTimer: Timer?
-    private var bgTask: UIBackgroundTaskIdentifier = UIBackgroundTaskInvalid
+  private var bgTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
     private var lastLocations = [CLLocation]()
     
     public private(set) var acceptableLocationAccuracy: CLLocationAccuracy = 100
@@ -95,10 +95,10 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
         removeNotifications()
         
         NotificationCenter.default.addObserver(self, selector:  #selector(applicationDidEnterBackground),
-                                               name: NSNotification.Name.UIApplicationDidEnterBackground,
+                                               name: UIApplication.didEnterBackgroundNotification,
                                                object: nil)
         NotificationCenter.default.addObserver(self, selector:  #selector(applicationDidBecomeActive),
-                                               name: NSNotification.Name.UIApplicationDidBecomeActive,
+                                               name: UIApplication.didBecomeActiveNotification,
                                                object: nil)
     }
 
@@ -168,7 +168,7 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    func checkLocationTimerEvent() {
+    @objc func checkLocationTimerEvent() {
 
         stopCheckLocationTimer()
         
@@ -193,7 +193,7 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    func waitTimerEvent() {
+    @objc func waitTimerEvent() {
         
         stopWaitTimer()
         
@@ -217,7 +217,7 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
         return location.horizontalAccuracy <= acceptableLocationAccuracy ? true : false
     }
    
-    func stopAndResetBgTaskIfNeeded()  {
+    @objc func stopAndResetBgTaskIfNeeded()  {
         
         if isManagerRunning {
             stopBackgroundTask()
@@ -230,7 +230,7 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
     private func startBackgroundTask() {
         let state = UIApplication.shared.applicationState
         
-        if ((state == .background || state == .inactive) && bgTask == UIBackgroundTaskInvalid) {
+        if ((state == .background || state == .inactive) && bgTask == UIBackgroundTaskIdentifier.invalid) {
             
             bgTask = UIApplication.shared.beginBackgroundTask(expirationHandler: {
                 
@@ -240,9 +240,9 @@ public class APScheduledLocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     @objc private func stopBackgroundTask() {
-        guard bgTask != UIBackgroundTaskInvalid else { return }
+        guard bgTask != UIBackgroundTaskIdentifier.invalid else { return }
         
         UIApplication.shared.endBackgroundTask(bgTask)
-        bgTask = UIBackgroundTaskInvalid
+        bgTask = UIBackgroundTaskIdentifier.invalid
     }
 }
